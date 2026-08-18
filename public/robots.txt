@@ -1,0 +1,6 @@
+# Robots.txt for Lax360
+User-agent: *
+Allow: /
+
+# Sitemap URL
+Sitemap: https://lax360.com/sitemap.xml

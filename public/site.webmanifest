@@ -1,0 +1,21 @@
+{
+  "name": "Lax360 Pvt Ltd",
+  "short_name": "Lax360",
+  "description": "Intelligent AI Solutions, Web & Mobile Development, and Scalable Enterprise Systems",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/laxLogo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/laxLogo2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
