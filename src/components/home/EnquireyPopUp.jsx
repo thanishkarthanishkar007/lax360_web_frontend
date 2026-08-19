@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 export default function EnquiryPopup() {
 
-    const API_URL = "https://lax360.onrender.com/api/contacts/createContact";
+    const API_URL = "https://lax360-web-backend.onrender.com/api/contacts/createContact";
 
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
