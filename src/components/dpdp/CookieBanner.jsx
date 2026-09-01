@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Cookie, Settings, Check } from "lucide-react";
+import { Cookie, ArrowRight, X } from "lucide-react";
 import CookiePreferencesModal from "./CookiePreferencesModal";
 
 const CookieBanner = () => {
@@ -11,7 +11,7 @@ const CookieBanner = () => {
     if (!consent) {
       const timer = setTimeout(() => {
         setShowBanner(true);
-      }, 1000);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -27,45 +27,66 @@ const CookieBanner = () => {
     setShowBanner(false);
   };
 
+  const handleCloseDismiss = () => {
+    setShowBanner(false);
+  };
+
   return (
     <>
       {showBanner && (
-        <div className="fixed bottom-3 sm:bottom-4 left-3 right-3 sm:left-6 sm:right-6 lg:left-10 lg:right-10 max-w-6xl mx-auto z-50 animate-in fade-in slide-in-from-bottom duration-500">
-          <div className="bg-[#101024]/95 backdrop-blur-xl border border-purple-500/30 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-6 sm:py-3.5 shadow-2xl shadow-black/80 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
-            {/* Left side: Icon & Text */}
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="p-2 rounded-xl bg-purple-600/20 text-purple-400 flex-shrink-0">
-                <Cookie size={18} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-200 leading-snug">
-                  <strong className="text-white font-semibold mr-1 font-['Poppins']">
-                    Your Privacy:
-                  </strong>
-                  We use cookies and similar technologies to enhance your browsing experience, analyze site traffic, and support our digital services in accordance with the DPDP Act.
-                </p>
-              </div>
-            </div>
+        <div className="fixed bottom-0 left-0 right-0 w-full z-50 animate-in fade-in slide-in-from-bottom duration-300">
+          <div className="bg-[#0b0b1c]/98 backdrop-blur-2xl border-t border-purple-500/25 shadow-[0_-12px_40px_rgba(0,0,0,0.7)] px-4 sm:px-8 lg:px-12 py-3">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-8">
+              {/* Left Side: Icon, Title, Badge & Description */}
+              <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 flex-shrink-0">
+                  <Cookie size={18} />
+                </div>
 
-            {/* Right side: Action Buttons */}
-            <div className="flex items-center justify-end gap-2.5 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => setShowModal(true)}
-                className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition border border-white/10 cursor-pointer"
-              >
-                <Settings size={13} />
-                <span>Manage Preferences</span>
-              </button>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="font-['Poppins'] font-bold text-xs sm:text-sm tracking-wider uppercase text-white">
+                      Your Privacy
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300">
+                      DPDP 2023
+                    </span>
+                  </div>
 
-              <button
-                type="button"
-                onClick={handleAcceptAll}
-                className="px-4 py-1.5 sm:py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition cursor-pointer"
-              >
-                <Check size={14} />
-                <span>Accept</span>
-              </button>
+                  <p className="text-[11px] sm:text-xs text-gray-300 leading-snug line-clamp-2 sm:line-clamp-none">
+                    We use cookies and similar technologies for secure digital services, traffic telemetry, and performance. You can manage your granular preferences at any time.
+                  </p>
+                </div>
+              </div>
+
+              {/* Right Side: Manage Preferences, Accept All, Close */}
+              <div className="flex items-center justify-end gap-2.5 sm:gap-3 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(true)}
+                  className="px-4 sm:px-5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-gray-200 hover:text-white text-xs font-semibold uppercase tracking-wider border border-white/15 transition cursor-pointer"
+                >
+                  Manage Preferences
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleAcceptAll}
+                  className="px-5 sm:px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition cursor-pointer"
+                >
+                  <span>Accept All</span>
+                  <ArrowRight size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCloseDismiss}
+                  className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
+                  title="Dismiss"
+                >
+                  <X size={17} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
