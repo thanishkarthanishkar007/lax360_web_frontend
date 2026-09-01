@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
 import web from "../../assets/images/home/service/1.jpeg";
 import ai from "../../assets/images/home/service/2.jpeg";
 import blockchain from "../../assets/images/home/service/3.jpeg";
@@ -10,7 +12,19 @@ import iot from "../../assets/images/home/service/8.jpeg";
 import saas from "../../assets/images/home/service/9.jpeg";
 import { useNavigate } from "react-router-dom";
 
-const services = [
+const fallbackImageMap = {
+  "Web 3.0": web,
+  "AI Solutions": ai,
+  "Blockchain": blockchain,
+  "CAD Design": cad,
+  "Cyber Security": cyber,
+  "Software Services": software,
+  "Embedded Systems": embedded,
+  "IoT Solutions": iot,
+  "SaaS Solutions": saas,
+};
+
+const initialServices = [
   {
     title: "Web 3.0",
     description:
@@ -69,9 +83,35 @@ const services = [
 
 const ServicesPreview = () => {
   const navigate = useNavigate();
+  const [services, setServices] = useState(initialServices);
   const [activeIndex, setActiveIndex] = useState(null);
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/services`);
+        const data = response.data?.services;
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((s, index) => ({
+            title: s.title,
+            description: s.description,
+            image:
+              s.image ||
+              fallbackImageMap[s.title] ||
+              initialServices[index % initialServices.length]?.image ||
+              web,
+          }));
+          setServices(mapped);
+        }
+      } catch (err) {
+        console.warn("Using default services for preview:", err.message);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -87,16 +127,15 @@ const ServicesPreview = () => {
   }, []);
 
   const heading = "Services We Offer";
-
   const words = heading.split(" ");
 
   return (
     <section
       ref={sectionRef}
-      className="w-full  px-6 sm:px-10 lg:px-16 py-28 services-bg"
+      className="w-full px-6 sm:px-10 lg:px-16 py-28 services-bg"
     >
       <div className="max-w-7xl mx-auto">
-        <h2 className="font-['Poppins'] text-4xl sm:text-5xl lg:text-6xl  font-bold leading-tight flex justify-center flex-wrap gap-x-3 pb-10">
+        <h2 className="font-['Poppins'] text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight flex justify-center flex-wrap gap-x-3 pb-10">
           {words.map((word, index) => (
             <span
               key={index}
@@ -127,6 +166,9 @@ const ServicesPreview = () => {
                 src={service.image}
                 alt={service.title}
                 className="w-full h-[400px] object-cover"
+                onError={(e) => {
+                  e.target.src = web;
+                }}
               />
 
               <div className="absolute inset-0 bg-black/60"></div>
@@ -160,7 +202,7 @@ const ServicesPreview = () => {
         </div>
 
         {/* DESKTOP: Grid Layout */}
-        <div className="hidden lg:grid grid-cols-3 gap-10 ">
+        <div className="hidden lg:grid grid-cols-3 gap-10">
           {services.map((service, index) => (
             <div
               key={index}
@@ -173,6 +215,9 @@ const ServicesPreview = () => {
                 alt={service.title}
                 className="absolute inset-0 w-full h-full object-cover 
                transition-transform duration-700 group-hover:scale-105 group-hover:blur-md"
+                onError={(e) => {
+                  e.target.src = web;
+                }}
               />
 
               {/* Overlay */}
@@ -204,10 +249,9 @@ const ServicesPreview = () => {
 
                   <button
                     onClick={() => navigate("/services")}
-                    className="mt-6 text-sm font-medium hover:underline-offset-1 cursor-pointer "
+                    className="mt-6 text-sm font-medium hover:underline-offset-1 cursor-pointer"
                   >
                     Expand →
-                    {/* <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-purple-400 transition-all duration-300 group-hover:w-full"></span> */}
                   </button>
                 </div>
               </div>

@@ -2,14 +2,13 @@ import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { Plus, Minus } from "lucide-react";
 import ApplicationModal from "./ApplicationModal";
-import CreateJobModal from "./CreateJobModal";
+import { API_BASE_URL } from "../../config/api";
 
 const JobSection = () => {
   const [jobs, setJobs] = useState([]);
   const [openJobId, setOpenJobId] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,8 +16,7 @@ const JobSection = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://lax360-web-backend.onrender.com/api/jobs/getJob");
-      // Assuming response.data is an array of jobs or contains .data array. Adjusting to common patterns.
+      const response = await axios.get(`${API_BASE_URL}/api/jobs/getJob`);
       if (Array.isArray(response.data)) {
         setJobs(response.data);
       } else if (response.data && Array.isArray(response.data.data)) {
@@ -61,12 +59,6 @@ const JobSection = () => {
         <h2 className="text-3xl md:text-4xl font-semibold">
           Find Your Next Opportunity
         </h2>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-purple-600 px-6 py-2 rounded text-white font-semibold hover:bg-purple-700 transition"
-        >
-          Create Job
-        </button> 
       </div>
 
       {/* Search */}
@@ -133,13 +125,6 @@ const JobSection = () => {
             setShowModal(false);
             setSelectedJob(null);
           }}
-        />
-      )}
-
-      {showCreateModal && (
-        <CreateJobModal
-          close={() => setShowCreateModal(false)}
-          fetchJobs={fetchJobs}
         />
       )}
     </section>

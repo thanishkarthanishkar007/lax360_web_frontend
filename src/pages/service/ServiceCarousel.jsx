@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
 import web from "../../assets/images/home/service/1.jpeg";
 import ai from "../../assets/images/home/service/2.jpeg";
 import blockchain from "../../assets/images/home/service/3.jpeg";
@@ -10,7 +12,19 @@ import embedded from "../../assets/images/home/service/7.jpeg";
 import iot from "../../assets/images/home/service/8.jpeg";
 import saas from "../../assets/images/home/service/9.jpeg";
 
-const services = [
+const fallbackImageMap = {
+  "Web 3.0": web,
+  "AI Solutions": ai,
+  "Blockchain": blockchain,
+  "CAD Design": cad,
+  "Cyber Security": cyber,
+  "Software Services": software,
+  "Embedded Systems": embedded,
+  "IoT Solutions": iot,
+  "SaaS Solutions": saas,
+};
+
+const initialServices = [
   {
     title: "Web 3.0",
     description:
@@ -66,13 +80,12 @@ const services = [
     image: saas,
   },
 ];
-// duplicate for infinite
-const duplicated = [...services, ...services];
 
 export default function ServicesCarousel() {
   const trackRef = useRef(null);
   const animationRef = useRef(null);
 
+  const [services, setServices] = useState(initialServices);
   const [isHovered, setIsHovered] = useState(false);
   const [speed, setSpeed] = useState(0.5); //SPEED CONTROL
   const [position, setPosition] = useState(0);
@@ -80,6 +93,35 @@ export default function ServicesCarousel() {
   const isDragging = useRef(false);
   const startX = useRef(0);
   const dragStartPos = useRef(0);
+
+  // Fetch dynamic services from backend
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/services`);
+        const data = response.data?.services;
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((s, index) => ({
+            title: s.title,
+            description: s.description,
+            image:
+              s.image ||
+              fallbackImageMap[s.title] ||
+              initialServices[index % initialServices.length]?.image ||
+              web,
+          }));
+          setServices(mapped);
+        }
+      } catch (err) {
+        console.warn("Using default services:", err.message);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  // duplicate for infinite scrolling
+  const duplicated = [...services, ...services];
 
   // AUTO SCROLL ENGINE (no lag)
   useEffect(() => {
@@ -121,7 +163,7 @@ export default function ServicesCarousel() {
   };
 
   return (
-    <section className="w-full software-services   py-20 overflow-hidden">
+    <section className="w-full software-services py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-16">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-12 gap-6">
@@ -167,12 +209,14 @@ export default function ServicesCarousel() {
                 className="w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 group"
               >
                 <div className="relative h-[420px] rounded-3xl overflow-hidden bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/10 group-hover:border-purple-900 transition-all duration-500">
-
                   <img
                     src={service.image}
                     alt={service.title}
                     className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.src = web;
+                    }}
                   />
 
                   <div className="p-6">
@@ -183,7 +227,6 @@ export default function ServicesCarousel() {
                       {service.description}
                     </p>
                   </div>
-
                 </div>
               </div>
             ))}
