@@ -15,15 +15,16 @@ import {
   Mail,
   Phone,
   HelpCircle,
-  FileText,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import CookiePreferencesModal from "../../components/dpdp/CookiePreferencesModal";
+import PrivacyNoticeModal from "../../components/dpdp/PrivacyNoticeModal";
 
 const PrivacyCentre = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cookieModalOpen, setCookieModalOpen] = useState(false);
+  const [privacyNoticeModalOpen, setPrivacyNoticeModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -180,7 +181,7 @@ const PrivacyCentre = () => {
           </div>
           <button
             onClick={() => setCookieModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/10 transition flex items-center gap-2 flex-shrink-0"
+            className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/10 transition flex items-center gap-2 flex-shrink-0 cursor-pointer"
           >
             <span>Manage Cookie Settings</span>
             <ArrowRight size={14} />
@@ -217,7 +218,7 @@ const PrivacyCentre = () => {
                 <div className="pt-6 mt-6 border-t border-white/10">
                   <button
                     onClick={() => handleOpenModal(card.type)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-purple-600/20 text-gray-200 hover:text-white border border-white/10 hover:border-purple-500/30 text-xs font-semibold transition flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-purple-600/20 text-gray-200 hover:text-white border border-white/10 hover:border-purple-500/30 text-xs font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>{card.buttonText}</span>
                     <ArrowRight size={13} />
@@ -255,12 +256,12 @@ const PrivacyCentre = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            <Link
-              to="/privacy"
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/10 transition text-center"
+            <button
+              onClick={() => setPrivacyNoticeModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold border border-white/10 transition text-center cursor-pointer"
             >
               Read Privacy Notice
-            </Link>
+            </button>
             <Link
               to="/terms"
               className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition text-center"
@@ -291,7 +292,7 @@ const PrivacyCentre = () => {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -367,12 +368,16 @@ const PrivacyCentre = () => {
                 />
                 <label
                   htmlFor="dpdp-consent-modal"
-                  className="text-xs text-gray-300 leading-relaxed cursor-pointer"
+                  className="text-xs text-gray-300 leading-relaxed"
                 >
                   I agree to the processing of my personal data for the purpose described in the{" "}
-                  <Link to="/privacy" target="_blank" className="text-purple-400 hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setPrivacyNoticeModalOpen(true)}
+                    className="text-purple-400 underline font-semibold cursor-pointer"
+                  >
                     Privacy Notice
-                  </Link>
+                  </button>
                   .
                 </label>
               </div>
@@ -381,14 +386,14 @@ const PrivacyCentre = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition"
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? "Submitting..." : "Submit Request"}
                 </button>
@@ -402,6 +407,12 @@ const PrivacyCentre = () => {
       <CookiePreferencesModal
         isOpen={cookieModalOpen}
         onClose={() => setCookieModalOpen(false)}
+      />
+
+      {/* Privacy Notice Modal */}
+      <PrivacyNoticeModal
+        isOpen={privacyNoticeModalOpen}
+        onClose={() => setPrivacyNoticeModalOpen(false)}
       />
     </div>
   );

@@ -10,10 +10,10 @@ import {
   FaMapMarkerAlt,
   FaWhatsapp,
   FaArrowUp,
-  FaShieldAlt,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import CookiePreferencesModal from "../dpdp/CookiePreferencesModal";
+import PrivacyNoticeModal from "../dpdp/PrivacyNoticeModal";
 
 const servicesList = [
   "Web Development",
@@ -27,6 +27,7 @@ const servicesList = [
 
 const Footer = () => {
   const [cookieModalOpen, setCookieModalOpen] = useState(false);
+  const [privacyNoticeModalOpen, setPrivacyNoticeModalOpen] = useState(false);
 
   return (
     <footer className="relative footer-bg text-white overflow-hidden">
@@ -194,11 +195,16 @@ const Footer = () => {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-gray-400">
-            <Link to="/privacy" className="hover:text-purple-300 transition">
+            <button
+              type="button"
+              onClick={() => setPrivacyNoticeModalOpen(true)}
+              className="hover:text-purple-300 transition cursor-pointer"
+            >
               Privacy Notice
-            </Link>
+            </button>
             <span>&bull;</span>
             <button
+              type="button"
               onClick={() => setCookieModalOpen(true)}
               className="hover:text-purple-300 transition cursor-pointer underline-offset-2"
             >
@@ -220,6 +226,12 @@ const Footer = () => {
       <CookiePreferencesModal
         isOpen={cookieModalOpen}
         onClose={() => setCookieModalOpen(false)}
+      />
+
+      {/* Privacy Notice Modal */}
+      <PrivacyNoticeModal
+        isOpen={privacyNoticeModalOpen}
+        onClose={() => setPrivacyNoticeModalOpen(false)}
       />
 
       {/* MARQUEE ANIMATION */}

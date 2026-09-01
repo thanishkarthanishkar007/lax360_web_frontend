@@ -9,7 +9,6 @@ const CookieBanner = () => {
   useEffect(() => {
     const consent = localStorage.getItem("lax360_cookie_consent");
     if (!consent) {
-      // Delay slightly for smooth entrance
       const timer = setTimeout(() => {
         setShowBanner(true);
       }, 1000);
@@ -31,27 +30,29 @@ const CookieBanner = () => {
   return (
     <>
       {showBanner && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-8 md:right-8 md:max-w-xl z-50 animate-in fade-in slide-in-from-bottom duration-500">
-          <div className="bg-[#101024]/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-5 md:p-6 shadow-2xl shadow-black/80 flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-purple-600/20 text-purple-400 flex-shrink-0 mt-0.5">
-                <Cookie size={20} />
+        <div className="fixed bottom-3 sm:bottom-4 left-3 right-3 sm:left-6 sm:right-6 lg:left-10 lg:right-10 max-w-6xl mx-auto z-50 animate-in fade-in slide-in-from-bottom duration-500">
+          <div className="bg-[#101024]/95 backdrop-blur-xl border border-purple-500/30 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-6 sm:py-3.5 shadow-2xl shadow-black/80 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6">
+            {/* Left side: Icon & Text */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="p-2 rounded-xl bg-purple-600/20 text-purple-400 flex-shrink-0">
+                <Cookie size={18} />
               </div>
-              <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white font-['Poppins']">
-                  Your Privacy
-                </h4>
-                <p className="text-gray-300 text-xs leading-relaxed">
+              <div className="min-w-0">
+                <p className="text-xs text-gray-200 leading-snug">
+                  <strong className="text-white font-semibold mr-1 font-['Poppins']">
+                    Your Privacy:
+                  </strong>
                   We use cookies and similar technologies to enhance your browsing experience, analyze site traffic, and support our digital services in accordance with the DPDP Act.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-white/10">
+            {/* Right side: Action Buttons */}
+            <div className="flex items-center justify-end gap-2.5 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setShowModal(true)}
-                className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition border border-white/10"
+                className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition border border-white/10 cursor-pointer"
               >
                 <Settings size={13} />
                 <span>Manage Preferences</span>
@@ -60,7 +61,7 @@ const CookieBanner = () => {
               <button
                 type="button"
                 onClick={handleAcceptAll}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition"
+                className="px-4 py-1.5 sm:py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition cursor-pointer"
               >
                 <Check size={14} />
                 <span>Accept</span>
