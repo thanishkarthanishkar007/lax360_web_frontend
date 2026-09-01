@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight } from "lucide-react";
 import { toast } from "react-toastify";
-import logo from "../../assets/icons/logo.svg";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("lax360salem@gmail.com");
-  const [password, setPassword] = useState("lax360@salem");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -47,10 +46,7 @@ const AdminLogin = () => {
       <div className="max-w-md w-full relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3 bg-white/5 border border-purple-500/30 rounded-2xl shadow-xl shadow-purple-500/10 mb-4 backdrop-blur-md">
-            <img src={logo} alt="LAX360 Logo" className="w-12 h-12" />
-          </div>
-          <h1 className="font-['Poppins'] text-3xl font-bold text-white tracking-tight">
+          <h1 className="font-['Poppins'] text-3xl sm:text-4xl font-bold text-white tracking-tight">
             LAX<span className="text-purple-400">360</span> Admin Portal
           </h1>
           <p className="text-gray-400 text-sm mt-2">
@@ -71,7 +67,7 @@ const AdminLogin = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             {/* Email Field */}
             <div>
               <label className="block text-xs font-medium text-gray-300 uppercase tracking-wider mb-2">
@@ -85,8 +81,9 @@ const AdminLogin = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@lax360.in"
+                  placeholder="Enter admin email"
                   required
+                  autoComplete="off"
                   className="w-full pl-10 pr-4 py-3 bg-[#0a0a18] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
               </div>
@@ -105,8 +102,9 @@ const AdminLogin = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Enter password"
                   required
+                  autoComplete="new-password"
                   className="w-full pl-10 pr-11 py-3 bg-[#0a0a18] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
                 <button
@@ -143,7 +141,7 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          {/* Quick Credential Helper / Footer */}
+          {/* Security Protocol Footer */}
           <div className="mt-6 pt-6 border-t border-white/10 text-center">
             <p className="text-xs text-gray-500">
               LAX360 Administrative Security Protocol &bull; All changes sync with live database
