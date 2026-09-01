@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ArrowRight } from "lucide-react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const ContactFormSection = () => {
-
-    const API_URL = "https://lax360-web-backend.onrender.com/api/contacts/createContact";
+    const API_URL = `${API_BASE_URL}/api/contacts/createContact`;
 
     const [loading, setLoading] = useState(false);
+    const [consent, setConsent] = useState(false);
 
     const [formData, setFormData] = useState({
         Name: "",
@@ -43,8 +45,12 @@ const ContactFormSection = () => {
             return;
         }
 
-        try {
+        if (!consent) {
+            toast.error("Please agree to the processing of your personal data.");
+            return;
+        }
 
+        try {
             setLoading(true);
 
             const response = await axios.post(API_URL, formData, {
@@ -54,7 +60,6 @@ const ContactFormSection = () => {
             });
 
             if (response.status === 200 || response.status === 201) {
-
                 toast.success("Message sent successfully!");
 
                 setFormData({
@@ -64,11 +69,9 @@ const ContactFormSection = () => {
                     service: "",
                     message: "",
                 });
-
+                setConsent(false);
             }
-
         } catch (error) {
-
             console.log(error);
 
             const errMsg =
@@ -76,22 +79,16 @@ const ContactFormSection = () => {
                 "Server error. Please try again.";
 
             toast.error(errMsg);
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
     return (
         <section className="bg-gradient-to-br from-purple-400 to-purple-500 py-20 px-6">
-
             <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-
                 {/* LEFT SIDE */}
                 <div>
-
                     <h2 className="font-['Poppins'] text-4xl md:text-6xl font-bold text-black mb-6">
                         Get in Touch for any Information!
                     </h2>
@@ -101,7 +98,6 @@ const ContactFormSection = () => {
                     </p>
 
                     <div className="rounded-2xl overflow-hidden shadow-lg">
-
                         <iframe
                             title="LAX360 Location"
                             src="https://www.google.com/maps?q=11.6728886,78.1416668&hl=en&z=17&output=embed"
@@ -109,23 +105,18 @@ const ContactFormSection = () => {
                             loading="lazy"
                             allowFullScreen
                         />
-
                     </div>
-
                 </div>
 
                 {/* RIGHT FORM */}
                 <div className="bg-white p-10 rounded-3xl shadow-xl border">
-
                     <h3 className="text-3xl font-semibold mb-10 text-black">
                         Contact Us
                     </h3>
 
-                    <form onSubmit={handleSubmit} className="space-y-8">
-
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* NAME */}
                         <div>
-
                             <label className="block text-sm tracking-widest text-black/70 mb-2">
                                 NAME *
                             </label>
@@ -139,12 +130,10 @@ const ContactFormSection = () => {
                                 required
                                 className="w-full border-b border-black/40 p-3 outline-none focus:border-black transition"
                             />
-
                         </div>
 
                         {/* PHONE */}
                         <div>
-
                             <label className="block text-sm tracking-widest text-black/70 mb-2">
                                 PHONE NUMBER
                             </label>
@@ -157,12 +146,10 @@ const ContactFormSection = () => {
                                 placeholder="+91 9876543210"
                                 className="w-full border-b border-black/40 p-3 outline-none focus:border-black transition"
                             />
-
                         </div>
 
                         {/* EMAIL */}
                         <div>
-
                             <label className="block text-sm tracking-widest text-black/70 mb-2">
                                 EMAIL *
                             </label>
@@ -176,12 +163,10 @@ const ContactFormSection = () => {
                                 required
                                 className="w-full border-b border-black/40 p-3 outline-none focus:border-black transition"
                             />
-
                         </div>
 
                         {/* SERVICE */}
                         <div>
-
                             <label className="block text-sm tracking-widest text-black/70 mb-2">
                                 SERVICE
                             </label>
@@ -190,9 +175,8 @@ const ContactFormSection = () => {
                                 name="service"
                                 value={formData.service}
                                 onChange={handleChange}
-                                className="w-full border-b border-black/40 p-3 outline-none focus:border-black transition"
+                                className="w-full border-b border-black/40 p-3 outline-none focus:border-black transition bg-transparent"
                             >
-
                                 <option value="">Select Service</option>
                                 <option value="Web 3.0">Web 3.0</option>
                                 <option value="AI Solutions">AI Solutions</option>
@@ -203,14 +187,11 @@ const ContactFormSection = () => {
                                 <option value="Embedded Systems">Embedded Systems</option>
                                 <option value="IoT Solutions">IoT Solutions</option>
                                 <option value="SaaS Solutions">SaaS Solutions</option>
-
                             </select>
-
                         </div>
 
                         {/* MESSAGE */}
                         <div>
-
                             <label className="block text-sm tracking-widest text-black/70 mb-2">
                                 MESSAGE *
                             </label>
@@ -220,35 +201,54 @@ const ContactFormSection = () => {
                                 value={formData.message}
                                 onChange={handleChange}
                                 placeholder="Write your message here..."
-                                rows="4"
+                                rows="3"
                                 required
                                 className="w-full resize-none border-b border-black/40 p-3 outline-none focus:border-black transition"
                             />
+                        </div>
 
+                        {/* DPDP CONSENT CHECKBOX */}
+                        <div className="flex items-start gap-2.5 pt-1">
+                            <input
+                                type="checkbox"
+                                id="contact-consent"
+                                checked={consent}
+                                onChange={(e) => setConsent(e.target.checked)}
+                                required
+                                className="mt-1 h-4 w-4 accent-purple-600 rounded cursor-pointer flex-shrink-0"
+                            />
+                            <label
+                                htmlFor="contact-consent"
+                                className="text-xs text-black/80 leading-relaxed cursor-pointer"
+                            >
+                                I agree to the processing of my personal data for the purpose described in the{" "}
+                                <Link
+                                    to="/privacy"
+                                    target="_blank"
+                                    className="text-purple-700 underline font-medium"
+                                >
+                                    Privacy Notice
+                                </Link>
+                                .
+                            </label>
                         </div>
 
                         {/* BUTTON */}
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`flex items-center gap-3 bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold transition ${loading
+                            className={`flex items-center gap-3 bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold transition ${
+                                loading
                                     ? "opacity-70 cursor-not-allowed"
-                                    : "hover:bg-purple-700"
-                                }`}
+                                    : "hover:bg-purple-700 cursor-pointer"
+                            }`}
                         >
-
                             {loading ? "Submitting..." : "Submit Now"}
-
                             <ArrowRight size={18} />
-
                         </button>
-
                     </form>
-
                 </div>
-
             </div>
-
         </section>
     );
 };

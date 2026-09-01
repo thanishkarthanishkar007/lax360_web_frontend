@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const ApplicationModal = ({ job, close }) => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [consent, setConsent] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -55,12 +58,16 @@ const ApplicationModal = ({ job, close }) => {
       return;
     }
 
+    if (!consent) {
+      toast.error("Please agree to the processing of your personal data to submit your application.");
+      return;
+    }
+
     try {
       setLoading(true);
       setUploadProgress(0);
 
       const data = new FormData();
-
       data.append("firstName", formData.firstName);
       data.append("lastName", formData.lastName);
       data.append("email", formData.email);
@@ -72,29 +79,23 @@ const ApplicationModal = ({ job, close }) => {
       data.append("jobTitle", job.title);
       data.append("resume", formData.resume);
 
-      console.log("📤 Sending job application to localhost backend...");
-
-     const response = await axios.post(
-  "https://lax360-web-backend.onrender.com/api/careers/apply",
-  data,
-  {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/careers/apply`,
+        data,
+        {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percent = Math.round(
                 (progressEvent.loaded * 100) / progressEvent.total
               );
-
               setUploadProgress(percent);
             }
           },
         }
       );
-
-      console.log("✅ Application API response:", response.data);
 
       if (response.data.success) {
         toast.success("Application submitted successfully!");
@@ -110,7 +111,7 @@ const ApplicationModal = ({ job, close }) => {
           zip: "",
           resume: null,
         });
-
+        setConsent(false);
         setUploadProgress(0);
 
         close();
@@ -120,18 +121,11 @@ const ApplicationModal = ({ job, close }) => {
         );
       }
     } catch (error) {
-      console.error("❌ Application submit error:", error);
-
-      if (error.response) {
-        console.error("Backend status:", error.response.status);
-        console.error("Backend response:", error.response.data);
-      } else if (error.request) {
-        console.error("❌ Backend not reachable:", error.request);
-      }
+      console.error("Application submit error:", error);
 
       const errMsg =
         error?.response?.data?.message ||
-        "Server error. Please make sure backend is running on port 5000.";
+        "Server error. Please try again.";
 
       toast.error(errMsg);
     } finally {
@@ -142,7 +136,6 @@ const ApplicationModal = ({ job, close }) => {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <div className="relative bg-[#1a1a1a] w-full max-w-3xl rounded-xl p-6 md:p-8 shadow-lg overflow-y-auto max-h-[90vh]">
-
         {/* Close Button */}
         <button
           type="button"
@@ -158,7 +151,6 @@ const ApplicationModal = ({ job, close }) => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           {/* First Name / Last Name */}
           <div className="grid md:grid-cols-2 gap-4">
             <input
@@ -166,7 +158,8 @@ const ApplicationModal = ({ job, close }) => {
               placeholder="First Name *"
               value={formData.firstName}
               onChange={handleChange}
-              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+              required
+              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
             />
 
             <input
@@ -174,7 +167,7 @@ const ApplicationModal = ({ job, close }) => {
               placeholder="Last Name"
               value={formData.lastName}
               onChange={handleChange}
-              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
             />
           </div>
 
@@ -185,16 +178,17 @@ const ApplicationModal = ({ job, close }) => {
             placeholder="Email *"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+            required
+            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
           />
 
           {/* Phone */}
           <input
             name="phone"
-            placeholder="Phone"
+            placeholder="Phone Number"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
           />
 
           {/* Address */}
@@ -203,7 +197,7 @@ const ApplicationModal = ({ job, close }) => {
             placeholder="Street Address"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+            className="w-full p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
           />
 
           {/* City / State / Zip */}
@@ -213,7 +207,7 @@ const ApplicationModal = ({ job, close }) => {
               placeholder="City"
               value={formData.city}
               onChange={handleChange}
-              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
             />
 
             <input
@@ -221,7 +215,7 @@ const ApplicationModal = ({ job, close }) => {
               placeholder="State"
               value={formData.state}
               onChange={handleChange}
-              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
             />
 
             <input
@@ -229,7 +223,7 @@ const ApplicationModal = ({ job, close }) => {
               placeholder="Zip Code"
               value={formData.zip}
               onChange={handleChange}
-              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500"
+              className="p-3 rounded bg-[#111] border border-gray-700 text-white focus:outline-none focus:border-purple-500 text-sm"
             />
           </div>
 
@@ -244,7 +238,8 @@ const ApplicationModal = ({ job, close }) => {
               name="resume"
               accept=".pdf,.doc,.docx"
               onChange={handleChange}
-              className="w-full mt-2 text-gray-400 p-3 rounded bg-[#111] border border-gray-700 cursor-pointer"
+              required
+              className="w-full mt-2 text-gray-400 p-3 rounded bg-[#111] border border-gray-700 cursor-pointer text-sm"
             />
 
             {formData.resume && (
@@ -258,7 +253,7 @@ const ApplicationModal = ({ job, close }) => {
           {loading && (
             <div>
               <div className="flex justify-between text-sm text-gray-400 mb-2">
-                <span>Uploading...</span>
+                <span>Uploading resume...</span>
                 <span>{uploadProgress}%</span>
               </div>
 
@@ -273,11 +268,37 @@ const ApplicationModal = ({ job, close }) => {
             </div>
           )}
 
+          {/* DPDP Consent Checkbox */}
+          <div className="flex items-start gap-2.5 pt-2">
+            <input
+              type="checkbox"
+              id="career-consent"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              required
+              className="mt-1 h-4 w-4 accent-purple-600 rounded cursor-pointer flex-shrink-0"
+            />
+            <label
+              htmlFor="career-consent"
+              className="text-xs text-gray-300 leading-relaxed cursor-pointer"
+            >
+              I agree to the processing of my personal data for the purpose described in the{" "}
+              <Link
+                to="/privacy"
+                target="_blank"
+                className="text-purple-400 underline font-medium"
+              >
+                Privacy Notice
+              </Link>
+              .
+            </label>
+          </div>
+
           {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded font-semibold transition ${
+            className={`w-full py-3 rounded-xl font-semibold transition cursor-pointer text-sm ${
               loading
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-purple-600 hover:bg-purple-700"
@@ -287,7 +308,6 @@ const ApplicationModal = ({ job, close }) => {
               ? `Uploading ${uploadProgress}%`
               : "Submit Application"}
           </button>
-
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../../assets/icons/logo.svg";
 import {
   FaInstagram,
@@ -9,9 +9,11 @@ import {
   FaArrowRight,
   FaMapMarkerAlt,
   FaWhatsapp,
-  FaArrowUp
+  FaArrowUp,
+  FaShieldAlt,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import CookiePreferencesModal from "../dpdp/CookiePreferencesModal";
 
 const servicesList = [
   "Web Development",
@@ -24,14 +26,13 @@ const servicesList = [
 ];
 
 const Footer = () => {
+  const [cookieModalOpen, setCookieModalOpen] = useState(false);
+
   return (
     <footer className="relative footer-bg text-white overflow-hidden">
-
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-20 pt-20">
-
         {/* ================= GRID ================= */}
         <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-4">
-
           {/* LOGO + ABOUT */}
           <div>
             <div className="flex items-center mb-4">
@@ -129,7 +130,6 @@ const Footer = () => {
             </div>
 
             <div className="flex gap-4 mt-6 text-lg">
-
               <a
                 href="https://www.instagram.com/lax360pvtltd"
                 target="_blank"
@@ -165,7 +165,6 @@ const Footer = () => {
               >
                 <FaWhatsapp />
               </a>
-
             </div>
           </div>
         </div>
@@ -182,22 +181,46 @@ const Footer = () => {
                 className="font-['Poppins'] flex items-center gap-4 text-6xl"
               >
                 LAX 360 {" "}
-                <FaArrowUp className="text-purple-400 rotate-60  hover:text-white" />
+                <FaArrowUp className="text-purple-400 rotate-60 hover:text-white" />
               </span>
             ))}
           </Link>
         </div>
 
-        {/* ================= COPYRIGHT ================= */}
-        <div className="border-t border-white/20 pt-6 pb-10 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400">
+        {/* ================= PRIVACY & LEGAL BAR ================= */}
+        <div className="border-t border-white/20 pt-6 pb-10 flex flex-col md:flex-row justify-between items-center text-xs sm:text-sm text-gray-400 gap-4">
           <p>
-            © {new Date().getFullYear()} LAX360 Pvt Ltd. All rights reserved.
+            © 2026 LAX360 Pvt Ltd. All rights reserved.
           </p>
-          <Link to="/privacy" className="hover:text-white mt-2 sm:mt-0">
-            Privacy Policy
-          </Link>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-gray-400">
+            <Link to="/privacy" className="hover:text-purple-300 transition">
+              Privacy Notice
+            </Link>
+            <span>&bull;</span>
+            <button
+              onClick={() => setCookieModalOpen(true)}
+              className="hover:text-purple-300 transition cursor-pointer underline-offset-2"
+            >
+              Cookie Preferences
+            </button>
+            <span>&bull;</span>
+            <Link to="/privacy-centre" className="hover:text-purple-300 transition text-purple-400 font-medium">
+              Privacy Centre
+            </Link>
+            <span>&bull;</span>
+            <Link to="/terms" className="hover:text-purple-300 transition">
+              Terms & Conditions
+            </Link>
+          </div>
         </div>
       </div>
+
+      {/* Cookie Preferences Modal */}
+      <CookiePreferencesModal
+        isOpen={cookieModalOpen}
+        onClose={() => setCookieModalOpen(false)}
+      />
 
       {/* MARQUEE ANIMATION */}
       <style>{`

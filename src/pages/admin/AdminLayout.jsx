@@ -59,6 +59,12 @@ const AdminLayout = () => {
       icon: MessageSquare,
       desc: "Client Messages & Leads",
     },
+    {
+      name: "Privacy Requests",
+      path: "/admin/privacy-requests",
+      icon: ShieldCheck,
+      desc: "DPDP Data Principal Requests",
+    },
   ];
 
   const getPageTitle = () => {
@@ -67,6 +73,7 @@ const AdminLayout = () => {
     if (location.pathname === "/admin/jobs") return "Jobs & Careers Management";
     if (location.pathname === "/admin/applications") return "Candidate Applications";
     if (location.pathname === "/admin/contacts") return "Contact Inquiries";
+    if (location.pathname === "/admin/privacy-requests") return "DPDP Privacy Requests";
     return "Admin Panel";
   };
 

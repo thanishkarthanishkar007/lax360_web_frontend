@@ -8,11 +8,17 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import ScrollToTop from "./ui/ScrollToTop";
 import EnquiryPopup from "./components/home/EnquireyPopUp";
+import CookieBanner from "./components/dpdp/CookieBanner";
 import Home from "./pages/Home";
 import About from "./pages/about/About";
 import Service from "./pages/service/Service";
 import Contact from "./pages/contact/Contact";
 import Careers from "./pages/carreers/Careers";
+
+// DPDP Compliance Pages
+import PrivacyCentre from "./pages/dpdp/PrivacyCentre";
+import PrivacyNotice from "./pages/dpdp/PrivacyNotice";
+import TermsConditions from "./pages/dpdp/TermsConditions";
 
 // Admin Context & Components
 import { AdminAuthProvider } from "./context/AdminAuthContext";
@@ -24,6 +30,7 @@ import AdminServices from "./pages/admin/AdminServices";
 import AdminJobs from "./pages/admin/AdminJobs";
 import AdminApplications from "./pages/admin/AdminApplications";
 import AdminContacts from "./pages/admin/AdminContacts";
+import AdminPrivacyRequests from "./pages/admin/AdminPrivacyRequests";
 
 const AppContent = () => {
   const location = useLocation();
@@ -33,6 +40,7 @@ const AppContent = () => {
     <>
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       {!isAdminRoute && <EnquiryPopup />}
+      {!isAdminRoute && <CookieBanner />}
       <ScrollToTop />
       {!isAdminRoute && <Navbar />}
 
@@ -44,6 +52,12 @@ const AppContent = () => {
         <Route path="/services" element={<Service />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/contact" element={<Contact />} />
+
+        {/* DPDP Legal & Privacy Routes */}
+        <Route path="/privacy" element={<PrivacyNotice />} />
+        <Route path="/privacy-notice" element={<PrivacyNotice />} />
+        <Route path="/privacy-centre" element={<PrivacyCentre />} />
+        <Route path="/terms" element={<TermsConditions />} />
 
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -62,6 +76,7 @@ const AppContent = () => {
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="applications" element={<AdminApplications />} />
           <Route path="contacts" element={<AdminContacts />} />
+          <Route path="privacy-requests" element={<AdminPrivacyRequests />} />
         </Route>
 
         {/* Fallback route */}
