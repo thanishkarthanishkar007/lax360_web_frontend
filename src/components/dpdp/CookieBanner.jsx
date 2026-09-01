@@ -39,7 +39,7 @@ const CookieBanner = () => {
         <div className="fixed bottom-0 left-0 right-0 w-full z-50 animate-in fade-in slide-in-from-bottom duration-300">
           <div className="bg-[#0b0b1c]/98 backdrop-blur-2xl border-t border-purple-500/25 shadow-[0_-12px_40px_rgba(0,0,0,0.7)] px-4 sm:px-8 lg:px-12 py-3">
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-8">
-              {/* Left Side: Icon, Title, Badge & Description */}
+              {/* Left Side: Icon, Title & Description */}
               <div className="flex items-center gap-3.5 min-w-0 flex-1">
                 <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 flex-shrink-0">
                   <Cookie size={18} />
@@ -49,9 +49,6 @@ const CookieBanner = () => {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="font-['Poppins'] font-bold text-xs sm:text-sm tracking-wider uppercase text-white">
                       Your Privacy
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300">
-                      DPDP 2023
                     </span>
                   </div>
 
