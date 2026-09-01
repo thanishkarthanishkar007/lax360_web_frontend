@@ -7,11 +7,11 @@ const CookieBanner = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("lax360_cookie_consent");
+    const consent = localStorage.getItem("lax360_dpdp_cookie_consent_v2");
     if (!consent) {
       const timer = setTimeout(() => {
         setShowBanner(true);
-      }, 800);
+      }, 600);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -19,15 +19,17 @@ const CookieBanner = () => {
   const handleAcceptAll = () => {
     const allAccepted = { essential: true, analytics: true, marketing: true };
     localStorage.setItem("lax360_cookie_preferences", JSON.stringify(allAccepted));
-    localStorage.setItem("lax360_cookie_consent", "all");
+    localStorage.setItem("lax360_dpdp_cookie_consent_v2", "all");
     setShowBanner(false);
   };
 
   const handlePreferencesSaved = () => {
+    localStorage.setItem("lax360_dpdp_cookie_consent_v2", "custom");
     setShowBanner(false);
   };
 
   const handleCloseDismiss = () => {
+    localStorage.setItem("lax360_dpdp_cookie_consent_v2", "dismissed");
     setShowBanner(false);
   };
 

@@ -14,8 +14,14 @@ const PrivacyNoticeModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[10000] flex items-center justify-center p-4">
-      <div className="bg-[#0e0e22] border border-white/15 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 bg-black/85 backdrop-blur-md z-[10000] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#0e0e22] border border-white/15 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in fade-in zoom-in-95 duration-200 text-left"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="p-5 sm:p-6 border-b border-white/10 flex items-center justify-between bg-[#12122a] sticky top-0 z-10">
           <div className="flex items-center gap-3">
@@ -32,6 +38,7 @@ const PrivacyNoticeModal = ({ isOpen, onClose }) => {
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
             title="Close"
