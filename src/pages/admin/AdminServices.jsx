@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../../config/api";
 import {
   Layers,
@@ -8,6 +8,7 @@ import {
   Search,
   X,
   Check,
+  UploadCloud,
   Image as ImageIcon,
   Sparkles,
   AlertCircle,
@@ -15,18 +16,35 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-// Default images reference in case admin wants to pick a preset
-const presetImages = [
-  { name: "Web 3.0", url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" },
-  { name: "AI & ML", url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80" },
-  { name: "Blockchain", url: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=80" },
-  { name: "CAD Design", url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80" },
-  { name: "Cyber Security", url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80" },
-  { name: "Software Development", url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80" },
-  { name: "Embedded Systems", url: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80" },
-  { name: "IoT Solutions", url: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" },
-  { name: "Cloud & SaaS", url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80" },
-];
+// Default website service images
+import web from "../../assets/images/home/service/1.jpeg";
+import ai from "../../assets/images/home/service/2.jpeg";
+import blockchain from "../../assets/images/home/service/3.jpeg";
+import cad from "../../assets/images/home/service/4.jpeg";
+import cyber from "../../assets/images/home/service/5.jpeg";
+import software from "../../assets/images/home/service/6.jpeg";
+import embedded from "../../assets/images/home/service/7.jpeg";
+import iot from "../../assets/images/home/service/8.jpeg";
+import saas from "../../assets/images/home/service/9.jpeg";
+
+const fallbackImageMap = {
+  "Web 3.0": web,
+  "AI Solutions": ai,
+  "Blockchain": blockchain,
+  "CAD Design": cad,
+  "Cyber Security": cyber,
+  "Software Services": software,
+  "Embedded Systems": embedded,
+  "IoT Solutions": iot,
+  "SaaS Solutions": saas,
+};
+
+const getServiceImage = (service) => {
+  if (service?.image && service.image.trim() !== "") {
+    return service.image;
+  }
+  return fallbackImageMap[service?.title] || web;
+};
 
 const AdminServices = () => {
   const [services, setServices] = useState([]);
@@ -39,6 +57,11 @@ const AdminServices = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Image Upload State
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const fileInputRef = useRef(null);
+
   // Delete Confirmation State
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -48,7 +71,6 @@ const AdminServices = () => {
     title: "",
     category: "Development",
     description: "",
-    image: "",
     order: 0,
   });
 
@@ -74,11 +96,12 @@ const AdminServices = () => {
   const openAddModal = () => {
     setIsEditing(false);
     setSelectedService(null);
+    setImageFile(null);
+    setPreviewUrl("");
     setFormData({
       title: "",
       category: "Development",
       description: "",
-      image: presetImages[0].url,
       order: services.length + 1,
     });
     setModalOpen(true);
@@ -87,14 +110,40 @@ const AdminServices = () => {
   const openEditModal = (service) => {
     setIsEditing(true);
     setSelectedService(service);
+    setImageFile(null);
+    setPreviewUrl(getServiceImage(service));
     setFormData({
       title: service.title || "",
       category: service.category || "General",
       description: service.description || "",
-      image: service.image || "",
       order: service.order || 0,
     });
     setModalOpen(true);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select a valid image file (JPG, PNG, WEBP, SVG)");
+        return;
+      }
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select a valid image file (JPG, PNG, WEBP, SVG)");
+        return;
+      }
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -107,27 +156,46 @@ const AdminServices = () => {
 
     try {
       setSubmitting(true);
+
+      const data = new FormData();
+      data.append("title", formData.title.trim());
+      data.append("category", formData.category);
+      data.append("description", formData.description.trim());
+      data.append("order", formData.order);
+
+      if (imageFile) {
+        data.append("image", imageFile);
+      } else if (isEditing && selectedService?.image) {
+        data.append("image", selectedService.image);
+      }
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
       if (isEditing && selectedService) {
-        const res = await api.put(
-          `/api/services/${selectedService._id || selectedService.id}`,
-          formData
-        );
+        const id = selectedService._id || selectedService.id;
+        const res = await api.put(`/api/services/${id}`, data, config);
         if (res.data?.success) {
           toast.success("Service updated successfully!");
           setModalOpen(false);
           fetchServices();
         }
       } else {
-        const res = await api.post("/api/services", formData);
+        const res = await api.post("/api/services", data, config);
         if (res.data?.success) {
-          toast.success("New service created successfully!");
+          toast.success("Service created successfully!");
           setModalOpen(false);
           fetchServices();
         }
       }
     } catch (err) {
       console.error("Save service error:", err);
-      toast.error(err.response?.data?.message || "Failed to save service.");
+      toast.error(
+        err.response?.data?.message || "Failed to save service. Try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -138,7 +206,7 @@ const AdminServices = () => {
       setDeleting(true);
       const res = await api.delete(`/api/services/${id}`);
       if (res.data?.success) {
-        toast.success("Service deleted successfully!");
+        toast.success("Service deleted successfully.");
         setDeleteConfirmId(null);
         fetchServices();
       }
@@ -161,7 +229,7 @@ const AdminServices = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Top action header */}
+      {/* Header Actions Card */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0e0e22] border border-white/10 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2">
@@ -173,21 +241,22 @@ const AdminServices = () => {
             </h2>
           </div>
           <p className="text-xs text-gray-400 mt-1">
-            Total {services.length} services configured &bull; Live updates sync directly to the homepage & services page
+            Total {services.length} services &bull; Dynamic database items that display on the public website carousel & home preview
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={fetchServices}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition cursor-pointer"
             title="Refresh list"
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </button>
+
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition-all active:scale-[0.98] cursor-pointer"
           >
             <Plus size={16} />
             <span>Add New Service</span>
@@ -195,7 +264,7 @@ const AdminServices = () => {
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search Input */}
       <div className="relative">
         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
@@ -223,7 +292,7 @@ const AdminServices = () => {
           {!search && (
             <button
               onClick={openAddModal}
-              className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-xs font-semibold transition"
+              className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-xl text-white text-xs font-semibold transition cursor-pointer"
             >
               Add First Service
             </button>
@@ -233,30 +302,25 @@ const AdminServices = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service, idx) => {
             const serviceId = service._id || service.id || `srv-${idx}`;
+            const serviceImg = getServiceImage(service);
+
             return (
               <div
                 key={serviceId}
                 className="bg-[#0e0e22] border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-purple-500/40 transition-all duration-300 group shadow-lg"
               >
                 <div>
-                  {/* Service Image / Header Preview */}
+                  {/* Service Image matching Website */}
                   <div className="relative h-44 w-full bg-[#080816] overflow-hidden">
-                    {service.image ? (
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          e.target.src = "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-900/30 to-indigo-900/20 text-purple-300">
-                        <ImageIcon size={32} className="opacity-50" />
-                        <span className="text-[11px] mt-1 text-gray-400">No Image Set</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e22] via-black/30 to-transparent" />
+                    <img
+                      src={serviceImg}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = web;
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e22] via-black/20 to-transparent" />
 
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3">
@@ -295,7 +359,7 @@ const AdminServices = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openEditModal(service)}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-purple-600/20 hover:text-purple-300 text-gray-300 border border-white/10 hover:border-purple-500/30 transition text-xs flex items-center gap-1 font-medium"
+                      className="p-2 rounded-lg bg-white/5 hover:bg-purple-600/20 hover:text-purple-300 text-gray-300 border border-white/10 hover:border-purple-500/30 transition text-xs flex items-center gap-1 font-medium cursor-pointer"
                       title="Edit Service"
                     >
                       <Edit2 size={13} />
@@ -304,7 +368,7 @@ const AdminServices = () => {
 
                     <button
                       onClick={() => setDeleteConfirmId(serviceId)}
-                      className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition text-xs flex items-center gap-1 font-medium"
+                      className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition text-xs flex items-center gap-1 font-medium cursor-pointer"
                       title="Delete Service"
                     >
                       <Trash2 size={13} />
@@ -318,7 +382,7 @@ const AdminServices = () => {
         </div>
       )}
 
-      {/* Add/Edit Service Modal */}
+      {/* Add / Edit Service Modal with Image Upload */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#121226] border border-white/15 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -334,7 +398,7 @@ const AdminServices = () => {
               </div>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -351,7 +415,7 @@ const AdminServices = () => {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. AI & Intelligent Systems"
+                  placeholder="e.g. Cloud Architecture & DevOps"
                   required
                   className="w-full px-4 py-3 bg-[#090915] border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-500"
                 />
@@ -366,7 +430,7 @@ const AdminServices = () => {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#090915] border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-3 bg-[#090915] border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-500 cursor-pointer"
                   >
                     <option value="Development">Development</option>
                     <option value="AI & ML">AI & ML</option>
@@ -394,53 +458,65 @@ const AdminServices = () => {
                 </div>
               </div>
 
-              {/* Image URL with Preset selector */}
+              {/* Image Upload Area */}
               <div>
                 <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Image URL
+                  Service Image (Upload File)
                 </label>
+
+                {/* Hidden File Input */}
                 <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 bg-[#090915] border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-purple-500"
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml"
+                  className="hidden"
                 />
 
-                {/* Preset Image Quick Selection */}
-                <div className="mt-3">
-                  <p className="text-[11px] text-gray-400 mb-2">Or select from presets:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {presetImages.map((preset, pIdx) => (
-                      <button
-                        key={pIdx}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, image: preset.url })}
-                        className={`text-[10px] px-2.5 py-1 rounded-lg border transition ${
-                          formData.image === preset.url
-                            ? "bg-purple-600 text-white border-purple-400"
-                            : "bg-white/5 text-gray-300 border-white/10 hover:bg-white/10"
-                        }`}
-                      >
-                        {preset.name}
-                      </button>
-                    ))}
-                  </div>
+                {/* Drag and Drop / Preview Container */}
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-purple-500/30 hover:border-purple-500/60 bg-[#090915] rounded-2xl p-5 text-center cursor-pointer transition-all duration-300 group"
+                >
+                  {previewUrl ? (
+                    <div className="space-y-3">
+                      <div className="relative h-40 w-full rounded-xl overflow-hidden border border-white/10 shadow-lg mx-auto">
+                        <img
+                          src={previewUrl}
+                          alt="Service Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <span className="text-xs text-white bg-purple-600 px-3 py-1.5 rounded-lg font-medium">
+                            Click to Change Image
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-xs text-purple-300">
+                        <UploadCloud size={16} />
+                        <span>
+                          {imageFile ? imageFile.name : "Current Service Image"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-6 flex flex-col items-center justify-center gap-2.5">
+                      <div className="p-3.5 rounded-full bg-purple-600/20 text-purple-400 group-hover:scale-110 transition-transform">
+                        <UploadCloud size={24} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          PNG, JPG, JPEG, WEBP or SVG (Max 10MB)
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Image preview */}
-                {formData.image && (
-                  <div className="mt-3 h-28 rounded-xl overflow-hidden border border-white/10">
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                      }}
-                    />
-                  </div>
-                )}
               </div>
 
               {/* Description */}
@@ -463,19 +539,19 @@ const AdminServices = () => {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition"
+                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-purple-600/30 transition disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-purple-600/30 transition disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? (
                     <>
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Saving...</span>
+                      <span>Saving Service...</span>
                     </>
                   ) : (
                     <>
@@ -509,7 +585,7 @@ const AdminServices = () => {
               <button
                 type="button"
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition"
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -517,7 +593,7 @@ const AdminServices = () => {
                 type="button"
                 onClick={() => handleDelete(deleteConfirmId)}
                 disabled={deleting}
-                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition flex items-center gap-2 disabled:opacity-50"
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {deleting ? "Deleting..." : "Yes, Delete"}
               </button>
