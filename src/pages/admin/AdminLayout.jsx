@@ -78,7 +78,7 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070712] text-white flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#070712] text-white flex flex-col">
       {/* Mobile Header Bar */}
       <div className="md:hidden flex items-center justify-between px-6 py-4 bg-[#0e0e20] border-b border-white/10 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ const AdminLayout = () => {
         </div>
         <button
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white"
+          className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white cursor-pointer"
         >
           {mobileSidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -106,79 +106,77 @@ const AdminLayout = () => {
         />
       )}
 
-      {/* Sidebar Navigation */}
+      {/* Fixed Sidebar Navigation */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-72 bg-[#0d0d1e] border-r border-white/10 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 h-screen bg-[#0d0d1e] border-r border-white/10 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div>
-          {/* Brand header */}
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <Link to="/admin" className="flex items-center gap-3">
-              <div className="p-2 bg-purple-600/20 border border-purple-500/30 rounded-xl">
-                <img src={logo} alt="LAX360" className="w-7 h-7" />
-              </div>
-              <div>
-                <h2 className="font-['Poppins'] font-bold text-lg leading-tight tracking-wide text-white">
-                  LAX<span className="text-purple-400">360</span>
-                </h2>
-                <p className="text-[11px] text-gray-400 uppercase tracking-widest font-medium">
-                  Control Center
-                </p>
-              </div>
-            </Link>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="p-4 space-y-1.5">
-            <div className="px-3 py-2 text-[11px] uppercase tracking-wider font-semibold text-gray-400">
-              Content Management
+        {/* Top brand header */}
+        <div className="p-6 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+          <Link to="/admin" className="flex items-center gap-3">
+            <div className="p-2 bg-purple-600/20 border border-purple-500/30 rounded-xl">
+              <img src={logo} alt="LAX360" className="w-7 h-7" />
             </div>
+            <div>
+              <h2 className="font-['Poppins'] font-bold text-lg leading-tight tracking-wide text-white">
+                LAX<span className="text-purple-400">360</span>
+              </h2>
+              <p className="text-[11px] text-gray-400 uppercase tracking-widest font-medium">
+                Control Center
+              </p>
+            </div>
+          </Link>
+        </div>
 
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = item.exact
-                ? location.pathname === item.path
-                : location.pathname.startsWith(item.path) &&
-                  (item.path !== "/admin" || location.pathname === "/admin");
-
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.exact}
-                  onClick={() => setMobileSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all duration-200 group ${
-                      isActive
-                        ? "bg-purple-600/20 border border-purple-500/40 text-white font-medium shadow-md shadow-purple-900/20"
-                        : "text-gray-400 hover:text-white hover:bg-white/5"
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <Icon
-                        size={19}
-                        className={`transition-colors ${
-                          isActive ? "text-purple-400" : "text-gray-400 group-hover:text-purple-300"
-                        }`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="block text-sm truncate">{item.name}</span>
-                      </div>
-                      {isActive && <ChevronRight size={14} className="text-purple-400" />}
-                    </>
-                  )}
-                </NavLink>
-              );
-            })}
+        {/* Scrollable Navigation Links */}
+        <div className="p-4 space-y-1.5 flex-1 overflow-y-auto">
+          <div className="px-3 py-2 text-[11px] uppercase tracking-wider font-semibold text-gray-400">
+            Content Management
           </div>
+
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.exact
+              ? location.pathname === item.path
+              : location.pathname.startsWith(item.path) &&
+                (item.path !== "/admin" || location.pathname === "/admin");
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.exact}
+                onClick={() => setMobileSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all duration-200 group ${
+                    isActive
+                      ? "bg-purple-600/20 border border-purple-500/40 text-white font-medium shadow-md shadow-purple-900/20"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      size={19}
+                      className={`transition-colors ${
+                        isActive ? "text-purple-400" : "text-gray-400 group-hover:text-purple-300"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-sm truncate">{item.name}</span>
+                    </div>
+                    {isActive && <ChevronRight size={14} className="text-purple-400" />}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-white/10 space-y-3 bg-[#0a0a18]">
+        <div className="p-4 border-t border-white/10 space-y-3 bg-[#0a0a18] flex-shrink-0">
           {/* Admin Info Card */}
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/10">
             <div className="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-xs">
@@ -201,7 +199,7 @@ const AdminLayout = () => {
               to="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-medium transition"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-medium transition cursor-pointer"
               title="View Public Website"
             >
               <ExternalLink size={13} />
@@ -210,7 +208,7 @@ const AdminLayout = () => {
 
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-medium border border-red-500/20 transition"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-medium border border-red-500/20 transition cursor-pointer"
               title="Logout from Admin Panel"
             >
               <LogOut size={13} />
@@ -220,10 +218,10 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Top Header Bar */}
-        <header className="hidden md:flex items-center justify-between px-8 py-5 bg-[#0b0b1c]/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-30">
+      {/* Main Content Area (Offset by sidebar width on desktop) */}
+      <div className="flex-1 flex flex-col min-w-0 md:ml-72 min-h-screen">
+        {/* Top Sticky Header Bar */}
+        <header className="hidden md:flex items-center justify-between px-8 py-5 bg-[#0b0b1c]/85 backdrop-blur-md border-b border-white/10 sticky top-0 z-30">
           <div>
             <h1 className="text-xl font-bold text-white font-['Poppins']">
               {getPageTitle()}
@@ -238,7 +236,7 @@ const AdminLayout = () => {
               to="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs text-gray-300 hover:text-purple-300 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/30 transition"
+              className="flex items-center gap-1.5 text-xs text-gray-300 hover:text-purple-300 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/30 transition cursor-pointer"
             >
               <span>View Website</span>
               <ExternalLink size={13} />
