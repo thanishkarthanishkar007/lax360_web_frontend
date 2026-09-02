@@ -108,7 +108,7 @@ const AdminLayout = () => {
 
       {/* Fixed Sidebar Navigation */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 h-screen bg-[#0d0d1e] border-r border-white/10 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 h-screen bg-[#0d0d1e] border-r border-white/10 flex flex-col justify-between transition-transform duration-300 ease-in-out no-scrollbar md:translate-x-0 ${
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -129,8 +129,8 @@ const AdminLayout = () => {
           </Link>
         </div>
 
-        {/* Scrollable Navigation Links */}
-        <div className="p-4 space-y-1.5 flex-1 overflow-y-auto">
+        {/* Navigation Links without visible scrollbar */}
+        <div className="p-4 space-y-1.5 flex-1 overflow-y-auto no-scrollbar">
           <div className="px-3 py-2 text-[11px] uppercase tracking-wider font-semibold text-gray-400">
             Content Management
           </div>

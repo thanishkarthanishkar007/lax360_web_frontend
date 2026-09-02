@@ -337,3 +337,12 @@ body {
     linear-gradient(180deg, #070012 0%, #0b001a 50%, #000000 100%);
   overflow: hidden;
 }
+
+/* Custom Scrollbar Utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
