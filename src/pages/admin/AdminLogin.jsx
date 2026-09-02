@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight } from "lucide-react";
 import { toast } from "react-toastify";
+import heroVideo from "../../assets/videos/hero.mp4";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -38,31 +39,43 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#06060c] via-[#0f0f23] to-[#080816] flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen relative flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden bg-black">
+      {/* Background Video from Hero */}
+      <video
+        src={heroVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover -z-20"
+      />
+
+      {/* Backdrop overlay & ambient glow */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px] -z-10" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[130px] pointer-events-none -z-10" />
+      <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       <div className="max-w-md w-full relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <h1 className="font-['Poppins'] text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          <h1 className="font-['Poppins'] text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
             LAX<span className="text-purple-400">360</span> Admin Portal
           </h1>
-          <p className="text-gray-400 text-sm mt-2">
+          <p className="text-gray-300 text-sm mt-2 drop-shadow">
             Secure control panel for website content & operations
           </p>
         </div>
 
         {/* Login Box */}
-        <div className="bg-[#121226]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl shadow-black/50">
+        <div className="bg-[#121226]/85 backdrop-blur-2xl border border-white/15 rounded-2xl p-8 shadow-2xl shadow-black/80">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-semibold uppercase tracking-widest mb-6">
             <ShieldCheck size={16} />
             <span>Admin Authentication</span>
           </div>
 
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+            <div className="mb-6 p-4 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-sm">
               {errorMsg}
             </div>
           )}
@@ -84,7 +97,7 @@ const AdminLogin = () => {
                   placeholder="Enter admin email"
                   required
                   autoComplete="off"
-                  className="w-full pl-10 pr-4 py-3 bg-[#0a0a18] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#0a0a18]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
               </div>
             </div>
@@ -105,12 +118,12 @@ const AdminLogin = () => {
                   placeholder="Enter password"
                   required
                   autoComplete="new-password"
-                  className="w-full pl-10 pr-11 py-3 bg-[#0a0a18] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
+                  className="w-full pl-10 pr-11 py-3 bg-[#0a0a18]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white transition"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -121,7 +134,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 px-4 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all duration-300 ${
+              className={`w-full py-3.5 px-4 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all duration-300 cursor-pointer ${
                 loading
                   ? "bg-purple-800 cursor-not-allowed opacity-75"
                   : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-[0.99]"
@@ -143,7 +156,7 @@ const AdminLogin = () => {
 
           {/* Security Protocol Footer */}
           <div className="mt-6 pt-6 border-t border-white/10 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-400">
               LAX360 Administrative Security Protocol &bull; All changes sync with live database
             </p>
           </div>
