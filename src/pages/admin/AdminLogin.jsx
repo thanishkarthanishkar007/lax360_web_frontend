@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight } from "lucide-react";
@@ -11,9 +11,19 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const videoRef = useRef(null);
 
   const { login } = useAdminAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch((err) => {
+        console.log("Auto-play prevented or video loading:", err);
+      });
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,27 +49,31 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden bg-black">
-      {/* Background Video from Hero */}
+    <div className="min-h-screen w-full relative flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Layer 0: Background Video from Hero */}
       <video
+        ref={videoRef}
         src={heroVideo}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover -z-20"
+        className="absolute inset-0 w-full h-full object-cover z-0"
       />
 
-      {/* Backdrop overlay & ambient glow */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px] -z-10" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[130px] pointer-events-none -z-10" />
-      <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none -z-10" />
+      {/* Layer 1: Dark Glass Backdrop Overlay */}
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px] z-10 pointer-events-none" />
 
-      <div className="max-w-md w-full relative z-10">
+      {/* Layer 2: Ambient Glow Accents */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-purple-600/20 rounded-full blur-[140px] pointer-events-none z-10" />
+      <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none z-10" />
+
+      {/* Layer 3: Main Login Card Content */}
+      <div className="max-w-md w-full relative z-20 my-8">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <h1 className="font-['Poppins'] text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
+          <h1 className="font-['Poppins'] text-3xl sm:text-4xl font-bold text-white tracking-tight drop-shadow-md">
             LAX<span className="text-purple-400">360</span> Admin Portal
           </h1>
           <p className="text-gray-300 text-sm mt-2 drop-shadow">
@@ -68,7 +82,7 @@ const AdminLogin = () => {
         </div>
 
         {/* Login Box */}
-        <div className="bg-[#121226]/85 backdrop-blur-2xl border border-white/15 rounded-2xl p-8 shadow-2xl shadow-black/80">
+        <div className="bg-[#101026]/90 backdrop-blur-2xl border border-white/15 rounded-2xl p-7 sm:p-8 shadow-2xl shadow-black/90">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-semibold uppercase tracking-widest mb-6">
             <ShieldCheck size={16} />
             <span>Admin Authentication</span>
@@ -97,7 +111,7 @@ const AdminLogin = () => {
                   placeholder="Enter admin email"
                   required
                   autoComplete="off"
-                  className="w-full pl-10 pr-4 py-3 bg-[#0a0a18]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-[#080816]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
               </div>
             </div>
@@ -118,7 +132,7 @@ const AdminLogin = () => {
                   placeholder="Enter password"
                   required
                   autoComplete="new-password"
-                  className="w-full pl-10 pr-11 py-3 bg-[#0a0a18]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
+                  className="w-full pl-10 pr-11 py-3 bg-[#080816]/90 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-sm"
                 />
                 <button
                   type="button"
